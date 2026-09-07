@@ -10,5 +10,4 @@ if exist "%agents%" msiexec /i "%agents%" /qn
 
 timeout /t 5 /nobreak >nul
 del "%agents%" /q >nul 2>&1
-del "%main%" /q >nul 2>&1
 exit /b 0
